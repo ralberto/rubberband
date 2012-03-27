@@ -1,5 +1,4 @@
-require 'patron'
-require 'cgi'
+require 'excon'
 
 module ElasticSearch
   module Transport
@@ -21,10 +20,8 @@ module ElasticSearch
       end
 
       def connect!
-        @session = Patron::Session.new
-        @session.base_url = @server
-        @session.timeout = @options[:timeout]
-        @session.headers['User-Agent'] = 'ElasticSearch.rb v0.1'
+        @session = Excon.new(@server, { :connect_timeout => @options[:timeout],
+                                        :headers => {'User-Agent' => 'ElasticSearch.rb v0.1'}})
       end
 
       def all_nodes
@@ -45,17 +42,20 @@ module ElasticSearch
           query = generate_query_string(params)
           path = [uri, query].join("?")
           #puts "request: #{method} #{@server} #{path} #{body}"
-          response = @session.request(method, path, headers, :data => body)
+          response = @session.request({:method => method,
+                                        :headers => headers,
+                                        :body => body,
+                                        :path => uri,
+                                        :query => query
+                                      })
           handle_error(response) if response.status >= 500
           response
         rescue Exception => e
           case e
-          when Patron::ConnectionFailed
-            raise ConnectionFailed
-          when Patron::HostResolutionError
-            raise HostResolutionError
-          when Patron::TimeoutError
+          when Excon::Errors::Timeout
             raise TimeoutError
+          when Excon::Errors::SocketError
+            raise ConnectionFailed
           else
             raise e
           end
