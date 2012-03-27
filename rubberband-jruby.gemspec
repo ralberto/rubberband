@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "elasticsearch/version"
 
 Gem::Specification.new do |s|
-  s.name = "rubberband"
+  s.name = "rubberband-jruby"
   s.version = ElasticSearch::VERSION
 
   s.platform    = Gem::Platform::RUBY
