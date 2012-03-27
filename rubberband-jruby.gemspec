@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.licenses = ["Apache v2"]
 
   s.add_runtime_dependency("excon", ["~> 0.13.2"])
+  s.add_runtime_dependency(%q<activesupport>, ["~> 3.0"])
   s.add_development_dependency("rake", ["~> 0.9.2"])
   s.add_development_dependency("rspec", ["~> 2.0"])
   s.add_development_dependency("yard", [">= 0.7.0"])
